@@ -11,7 +11,7 @@ import (
 func timeBubblesort(slice []int) ([]int, time.Duration) {
 	startTime := time.Now()
 
-	sort.Bubblesort(slice)
+	sort.BubbleSort(slice)
 
 	return slice, time.Since(startTime)
 }
@@ -20,6 +20,14 @@ func timeOptimizedBubblesort(slice []int) ([]int, time.Duration) {
 	startTime := time.Now()
 
 	sort.OptimizedBubbleSort(slice)
+
+	return slice, time.Since(startTime)
+}
+
+func timeCocktailShakerSort(slice []int) ([]int, time.Duration) {
+	startTime := time.Now()
+
+	sort.CocktailShakerSort(slice)
 
 	return slice, time.Since(startTime)
 }
@@ -45,6 +53,9 @@ func main() {
 	_, optBubbleSortElapsedTime := timeOptimizedBubblesort(append([]int(nil), slice...))
 	fmt.Printf("Optimized Bubblesort: %v\n", optBubbleSortElapsedTime)
 	//common.PrintSlice(optBubbleSortedSlice, 40)
+
+	_, optCocktailShakerSortElapsedTime := timeCocktailShakerSort(append([]int(nil), slice...))
+	fmt.Printf("Cocktail Shaker Sort: %v\n", optCocktailShakerSortElapsedTime)
 
 	// Verify that it's sorted.
 	common.CheckSorted(slice)
