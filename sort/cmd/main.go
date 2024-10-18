@@ -8,7 +8,7 @@ import (
 	"github.com/tankcdr/sort"
 )
 
-func timeBubblesort(slice []int) ([]int, time.Duration) {
+func timeBubbleSort(slice []int) ([]int, time.Duration) {
 	startTime := time.Now()
 
 	sort.BubbleSort(slice)
@@ -16,7 +16,7 @@ func timeBubblesort(slice []int) ([]int, time.Duration) {
 	return slice, time.Since(startTime)
 }
 
-func timeOptimizedBubblesort(slice []int) ([]int, time.Duration) {
+func timeOptimizedBubbleSort(slice []int) ([]int, time.Duration) {
 	startTime := time.Now()
 
 	sort.OptimizedBubbleSort(slice)
@@ -28,6 +28,14 @@ func timeCocktailShakerSort(slice []int) ([]int, time.Duration) {
 	startTime := time.Now()
 
 	sort.CocktailShakerSort(slice)
+
+	return slice, time.Since(startTime)
+}
+
+func timeQuickSort(slice []int) ([]int, time.Duration) {
+	startTime := time.Now()
+
+	sort.QuickSort(slice)
 
 	return slice, time.Since(startTime)
 }
@@ -46,16 +54,19 @@ func main() {
 	fmt.Println()
 
 	// Sort and display the result.
-	_, bubbleSortElapsedTime := timeBubblesort(append([]int(nil), slice...))
+	_, bubbleSortElapsedTime := timeBubbleSort(append([]int(nil), slice...))
 	fmt.Printf("Bubblesort: %v\n", bubbleSortElapsedTime)
 	//common.PrintSlice(bubbleSortedSlice, 40)
 
-	_, optBubbleSortElapsedTime := timeOptimizedBubblesort(append([]int(nil), slice...))
+	_, optBubbleSortElapsedTime := timeOptimizedBubbleSort(append([]int(nil), slice...))
 	fmt.Printf("Optimized Bubblesort: %v\n", optBubbleSortElapsedTime)
 	//common.PrintSlice(optBubbleSortedSlice, 40)
 
 	_, optCocktailShakerSortElapsedTime := timeCocktailShakerSort(append([]int(nil), slice...))
 	fmt.Printf("Cocktail Shaker Sort: %v\n", optCocktailShakerSortElapsedTime)
+
+	_, optQuickSortElapsedTime := timeQuickSort(append([]int(nil), slice...))
+	fmt.Printf("Quick Sort: %v\n", optQuickSortElapsedTime)
 
 	// Verify that it's sorted.
 	common.CheckSorted(slice)

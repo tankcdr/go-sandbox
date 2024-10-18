@@ -53,3 +53,38 @@ func CocktailShakerSort(a []int) {
 		}
 	}
 }
+
+func LomutoPartition(A []int) (pivot int, index int) {
+	lo := 0
+	hi := len(A) - 1
+	pivot = A[hi]
+
+	for j := lo; j < hi; j++ {
+		if A[j] < pivot {
+			A[lo], A[j] = A[j], A[lo]
+			lo++
+		}
+	}
+
+	A[lo], A[hi] = A[hi], A[lo]
+	return pivot, lo
+}
+
+func QuickSort(A []int, partitions ...func([]int) (int, int)) {
+	var partition func([]int) (int, int)
+
+	if len(partitions) > 0 && partitions[0] != nil {
+		partition = partitions[0]
+	} else {
+		partition = LomutoPartition
+	}
+
+	if len(A) <= 1 {
+		return
+	}
+
+	_, p := partition(A)
+	QuickSort(A[:p], partition)
+	QuickSort(A[p+1:], partition)
+
+}
