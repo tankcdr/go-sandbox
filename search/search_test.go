@@ -5,6 +5,7 @@ import (
 
 	"github.com/tankcdr/common"
 	"github.com/tankcdr/search"
+	"github.com/tankcdr/sort"
 )
 
 func TestSearch_LinearSearch(t *testing.T) {
@@ -35,5 +36,19 @@ func TestSearch_LinearSearch_NotFound(t *testing.T) {
 
 	if numTests != 1000 {
 		t.Errorf("Search error: incorrect number of tests %d", numTests)
+	}
+}
+
+func TestSearch_BinarySearch(t *testing.T) {
+	arr := common.MakeRandomIntSlice(500, 10000)
+	sort.QuickSort(arr)
+
+	targetIndex := 31
+	target := arr[targetIndex]
+
+	index, _ := search.BinarySearch(arr, target)
+
+	if index != targetIndex {
+		t.Errorf("Search error: target is not at index, %d", index)
 	}
 }
