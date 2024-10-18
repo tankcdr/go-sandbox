@@ -86,5 +86,27 @@ func QuickSort(A []int, partitions ...func([]int) (int, int)) {
 	_, p := partition(A)
 	QuickSort(A[:p], partition)
 	QuickSort(A[p+1:], partition)
+}
 
+func CountingSort(A []int, exclusiveMax int) []int {
+	B := make([]int, len(A))
+	C := make([]int, exclusiveMax)
+
+	for _, v := range A {
+		C[v]++
+	}
+
+	for index, _ := range C {
+		if index > 0 {
+			C[index] += C[index-1]
+		}
+	}
+
+	for i := len(A) - 1; i >= 0; i-- {
+		v := A[i]
+		C[v]--
+		B[C[v]] = v
+	}
+
+	return B
 }

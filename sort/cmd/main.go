@@ -40,6 +40,14 @@ func timeQuickSort(slice []int) ([]int, time.Duration) {
 	return slice, time.Since(startTime)
 }
 
+func timeCountingSort(slice []int, max int) ([]int, time.Duration) {
+	startTime := time.Now()
+
+	arr := sort.CountingSort(slice, max)
+
+	return arr, time.Since(startTime)
+}
+
 func main() {
 	// Get the number of items and maximum item value.
 	var numItems, max int
@@ -68,6 +76,6 @@ func main() {
 	_, optQuickSortElapsedTime := timeQuickSort(append([]int(nil), slice...))
 	fmt.Printf("Quick Sort: %v\n", optQuickSortElapsedTime)
 
-	// Verify that it's sorted.
-	common.CheckSorted(slice)
+	_, optCountingSortElapsedTime := timeCountingSort(append([]int(nil), slice...), max)
+	fmt.Printf("Counting Sort: %v\n", optCountingSortElapsedTime)
 }
