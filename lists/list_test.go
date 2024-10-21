@@ -101,7 +101,7 @@ func TestLinkedList_toString(t *testing.T) {
 
 	list.AddRange(values)
 
-	got := list.toString(", ")
+	got := list.ToString(", ")
 	want := "Apple, Banana, Cherry"
 
 	if got != want {
@@ -140,7 +140,7 @@ func TestLinkedList_isEmpty_Empty(t *testing.T) {
 	t.Parallel()
 	list := NewLinkedList()
 
-	if !list.isEmpty() {
+	if !list.IsEmpty() {
 		t.Errorf("list.isEmpty() = false, want true")
 	}
 }
@@ -152,7 +152,7 @@ func TestLinkedList_isEmpty_NotEmpty(t *testing.T) {
 
 	list.AddRange(values)
 
-	if list.isEmpty() {
+	if list.IsEmpty() {
 		t.Errorf("list.isEmpty() = true, want false")
 	}
 }
@@ -211,5 +211,265 @@ func TestLinkedList_Contains_NotFound(t *testing.T) {
 
 	if list.Contains("Date") {
 		t.Errorf("list.Contains(%q) = true, want false", "Date")
+	}
+}
+
+func TestLinkedList_Remove(t *testing.T) {
+	t.Parallel()
+	list := NewLinkedList()
+	values := []string{"Apple", "Banana", "Cherry"}
+
+	list.AddRange(values)
+
+	for _, value := range values {
+		removed := list.Remove(value)
+		if removed == nil {
+			t.Errorf("list.Remove(%q) = false, want true", value)
+		}
+	}
+}
+
+func TestLinkedList_Remove_NotFound(t *testing.T) {
+	t.Parallel()
+	list := NewLinkedList()
+	values := []string{"Apple", "Banana", "Cherry"}
+
+	list.AddRange(values)
+
+	removed := list.Remove("Date")
+
+	if removed != nil {
+		t.Errorf("list.Remove(%q) = true, want false", "Date")
+	}
+}
+
+func TestLinkedList_RemoveAt(t *testing.T) {
+	t.Parallel()
+	list := NewLinkedList()
+	values := []string{"Apple", "Banana", "Cherry"}
+
+	list.AddRange(values)
+
+	for i := 0; i < len(values); i++ {
+		removed := list.RemoveAt(0)
+		if removed == nil {
+			t.Errorf("list.RemoveAt(%d) = false, want true", i)
+		}
+	}
+
+	if list.sentinel.Next != nil {
+		t.Errorf("list.sentinel.Next = %v, want nil", list.sentinel.Next)
+	}
+
+	if list.Length() != 0 {
+		t.Errorf("list.Length() = %d, want 0", list.Length())
+	}
+
+}
+
+func TestLinkedList_RemoveAt_OutOfRange(t *testing.T) {
+	t.Parallel()
+	list := NewLinkedList()
+	values := []string{"Apple", "Banana", "Cherry"}
+
+	list.AddRange(values)
+
+	removed := list.RemoveAt(8)
+
+	if removed != nil {
+		t.Errorf("list.RemoveAt(8) = true, want false")
+	}
+}
+
+func TestLinkedList_LastNode(t *testing.T) {
+	t.Parallel()
+	list := NewLinkedList()
+	values := []string{"Apple", "Banana", "Cherry"}
+
+	list.AddRange(values)
+
+	lastNode := list.LastNode()
+
+	if lastNode.Data != "Cherry" {
+		t.Errorf("lastNode.Data = %q, want %q", lastNode.Data, "Date")
+	}
+}
+
+func TestLinkedList_Append(t *testing.T) {
+	t.Parallel()
+	list := NewLinkedList()
+	values := []string{"Apple", "Banana", "Cherry"}
+
+	list.AddRange(values)
+	list.Append("Date")
+
+	lastNode := list.LastNode()
+
+	if lastNode.Data != "Date" {
+		t.Errorf("lastNode.Data = %q, want %q", lastNode.Data, "Date")
+	}
+}
+
+func TestLinkedList_Add(t *testing.T) {
+	t.Parallel()
+	list := NewLinkedList()
+
+	list.Add("Apple")
+
+	if list.sentinel.Next == nil {
+		t.Errorf("list.sentinel.Next = nil, want &Cell{Apple, nil}")
+	} else if list.sentinel.Next.Data != "Apple" {
+		t.Errorf("list.sentinel.Next.Data = %q, want %q", list.sentinel.Next.Data, "Apple")
+	}
+}
+
+func TestLinkedList_AddList(t *testing.T) {
+	t.Parallel()
+	list := NewLinkedList()
+	other := NewLinkedList()
+	values := []string{"Apple", "Banana", "Cherry"}
+
+	list.AddRange(values)
+	other.AddRange(values)
+
+	list.AddList(*other)
+
+	lastNode := list.LastNode()
+
+	if lastNode.Data != "Cherry" {
+		t.Errorf("lastNode.Data = %q, want %q", lastNode.Data, "Date")
+	}
+}
+
+func TestLinkedList_AddList_Empty(t *testing.T) {
+	t.Parallel()
+	list := NewLinkedList()
+	other := NewLinkedList()
+
+	list.AddList(*other)
+
+	if list.sentinel.Next != nil {
+		t.Errorf("list.sentinel.Next = %v, want nil", list.sentinel.Next)
+	}
+}
+
+func TestLinkedList_AddList_WithValues(t *testing.T) {
+	t.Parallel()
+	list := NewLinkedList()
+	other := NewLinkedList()
+	values := []string{"Apple", "Banana", "Cherry"}
+
+	list.Add("Date")
+	other.AddRange(values)
+
+	list.AddList(*other)
+
+	lastNode := list.LastNode()
+
+	if lastNode.Data != "Cherry" {
+		t.Errorf("lastNode.Data = %q, want %q", lastNode.Data, "Date")
+	}
+
+	if list.sentinel.Next.Data != "Date" {
+		t.Errorf("list.sentinel.Next.Data = %q, want %q", list.sentinel.Next.Data, "Date")
+	}
+
+	if list.Length() != 4 {
+		t.Errorf("list.Length() = %d, want 4", list.Length())
+	}
+}
+
+func TestLinkedList_Clear(t *testing.T) {
+	t.Parallel()
+	list := NewLinkedList()
+	values := []string{"Apple", "Banana", "Cherry"}
+
+	list.AddRange(values)
+
+	list.Clear()
+
+	if list.sentinel.Next != nil {
+		t.Errorf("list.sentinel.Next = %v, want nil", list.sentinel.Next)
+	}
+}
+
+func TestLinkedList_Clear_Empty(t *testing.T) {
+	t.Parallel()
+	list := NewLinkedList()
+
+	list.Clear()
+
+	if list.sentinel.Next != nil {
+		t.Errorf("list.sentinel.Next = %v, want nil", list.sentinel.Next)
+	}
+}
+
+func TestLinkedList_ToSlice(t *testing.T) {
+	t.Parallel()
+	list := NewLinkedList()
+	values := []string{"Apple", "Banana", "Cherry"}
+
+	list.AddRange(values)
+
+	got := list.ToSlice()
+	for i, value := range values {
+		if i < len(got) {
+			if got[i].Data != value {
+				t.Errorf("got[%d] = %q, want %q", i, got[i].Data, value)
+			}
+		} else {
+			t.Errorf("got[%d] = _, want %q", i, value)
+		}
+	}
+}
+
+func TestLinkedList_ToSlice_Empty(t *testing.T) {
+	t.Parallel()
+	list := NewLinkedList()
+
+	got := list.ToSlice()
+
+	if len(got) != 0 {
+		t.Errorf("len(got) = %d, want 0", len(got))
+	}
+}
+
+func TestLinkedList_ToSlice_WithValues(t *testing.T) {
+	t.Parallel()
+	list := NewLinkedList()
+	values := []string{"Apple", "Banana", "Cherry"}
+
+	list.AddRange(values)
+	list.Append("Date")
+
+	values = append(values, "Date")
+
+	got := list.ToSlice()
+	for i, value := range values {
+		if i < len(got) {
+			if got[i].Data != value {
+				t.Errorf("got[%d] = %q, want %q", i, got[i].Data, value)
+			}
+		} else {
+			t.Errorf("got[%d] = _, want %q", i, value)
+		}
+	}
+}
+
+func TestLinkedList_Clone(t *testing.T) {
+	t.Parallel()
+	list := NewLinkedList()
+	values := []string{"Apple", "Banana", "Cherry"}
+
+	list.AddRange(values)
+
+	clone := list.Clone()
+
+	if clone == list {
+		t.Errorf("clone = list, want different instances")
+	}
+
+	if clone.ToString(", ") != list.ToString(", ") {
+		t.Errorf("clone.ToString() = %q, want %q", clone.ToString(", "), list.ToString(", "))
 	}
 }
