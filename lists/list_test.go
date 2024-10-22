@@ -473,3 +473,33 @@ func TestLinkedList_Clone(t *testing.T) {
 		t.Errorf("clone.ToString() = %q, want %q", clone.ToString(", "), list.ToString(", "))
 	}
 }
+
+func TestLinkedList_Push(t *testing.T) {
+	t.Parallel()
+	list := NewLinkedList()
+	values := []string{"Apple", "Banana", "Cherry"}
+
+	list.AddRange(values)
+
+	list.Push("Date")
+
+	if list.sentinel.Next.Data != "Date" {
+		t.Errorf("list.sentinel.Next.Data = %q, want %q", list.sentinel.Next.Data, "Date")
+	}
+}
+
+func TestLinkedList_Pop(t *testing.T) {
+	t.Parallel()
+	list := NewLinkedList()
+	values := []string{"Apple", "Banana", "Cherry"}
+
+	list.AddRange(values)
+
+	popped := list.Pop()
+
+	if popped == "" {
+		t.Errorf("popped = nil, want &Cell{Cherry, nil}")
+	} else if popped != "Apple" {
+		t.Errorf("popped.Data = %q, want %q", popped, "Apple")
+	}
+}

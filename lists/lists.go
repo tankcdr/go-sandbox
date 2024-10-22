@@ -116,6 +116,18 @@ func (l *LinkedList) Length() int {
 	return length
 }
 
+func (l *LinkedList) Push(value string) {
+	l.sentinel.AddAfter(&Cell{value, l.sentinel.Next})
+}
+
+func (l *LinkedList) Pop() string {
+	cell := l.sentinel.DeleteAfter()
+	if cell == nil {
+		return ""
+	}
+	return cell.Data
+}
+
 func (l *LinkedList) Remove(value string) *Cell {
 	var prev *Cell
 	for cell := l.sentinel; cell.Next != nil; cell = cell.Next {

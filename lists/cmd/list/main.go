@@ -20,7 +20,7 @@ func main() {
 	}
 	fmt.Println()
 
-	cCell.DeleteAfter()
+	bCell.DeleteAfter()
 
 	for cell := top; cell != nil; cell = cell.Next {
 		fmt.Printf("%s\n", cell.Data)
