@@ -503,3 +503,63 @@ func TestLinkedList_Pop(t *testing.T) {
 		t.Errorf("popped.Data = %q, want %q", popped, "Apple")
 	}
 }
+
+func TestLinkedList_Pop_Empty(t *testing.T) {
+	t.Parallel()
+	list := NewLinkedList()
+
+	popped := list.Pop()
+
+	if popped != "" {
+		t.Errorf("popped = %q, want nil", popped)
+	}
+}
+
+func TestLinkedList_HasLoop_False(t *testing.T) {
+	t.Parallel()
+	list := NewLinkedList()
+	values := []string{"Apple", "Banana", "Cherry"}
+
+	list.AddRange(values)
+
+	if list.HasLoop() {
+		t.Errorf("list.HasLoop() = true, want false")
+	}
+}
+
+func TestLinkedList_HasLoop_True(t *testing.T) {
+	t.Parallel()
+	list := NewLinkedList()
+	values := []string{"Apple", "Banana", "Cherry", "Date", "Eggplant", "Fig", "Grape", "Honeydew"}
+
+	list.AddRange(values)
+	list.LastNode().Next = list.sentinel.Next
+
+	if !list.HasLoop() {
+		t.Errorf("list.HasLoop() = false, want true")
+	}
+}
+
+func TestLinkedList_HasLoop_Empty(t *testing.T) {
+	t.Parallel()
+	list := NewLinkedList()
+
+	if list.HasLoop() {
+		t.Errorf("list.HasLoop() = true, want false")
+	}
+}
+
+func TestLinkedList_ToStringMax(t *testing.T) {
+	t.Parallel()
+	list := NewLinkedList()
+	values := []string{"Apple", "Banana", "Cherry"}
+
+	list.AddRange(values)
+
+	got := list.ToStringMax(", ", 2)
+	want := "Apple, Banana"
+
+	if got != want {
+		t.Errorf("got = %q, want %q", got, want)
+	}
+}

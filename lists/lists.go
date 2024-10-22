@@ -116,18 +116,6 @@ func (l *LinkedList) Length() int {
 	return length
 }
 
-func (l *LinkedList) Push(value string) {
-	l.sentinel.AddAfter(&Cell{value, l.sentinel.Next})
-}
-
-func (l *LinkedList) Pop() string {
-	cell := l.sentinel.DeleteAfter()
-	if cell == nil {
-		return ""
-	}
-	return cell.Data
-}
-
 func (l *LinkedList) Remove(value string) *Cell {
 	var prev *Cell
 	for cell := l.sentinel; cell.Next != nil; cell = cell.Next {
@@ -169,10 +157,24 @@ func (l *LinkedList) ToString(separator string) string {
 	var builder strings.Builder
 
 	for cell := l.sentinel.Next; cell != nil; cell = cell.Next {
-		builder.WriteString(cell.Data)
-		if cell.Next != nil {
+		if cell != l.sentinel.Next {
 			builder.WriteString(separator)
 		}
+		builder.WriteString(cell.Data)
+	}
+	return builder.String()
+}
+
+func (l *LinkedList) ToStringMax(separator string, max int) string {
+	var builder strings.Builder
+
+	i := 0
+	for cell := l.sentinel.Next; cell != nil && i < max; cell = cell.Next {
+		if i > 0 {
+			builder.WriteString(separator)
+		}
+		builder.WriteString(cell.Data)
+		i++
 	}
 	return builder.String()
 }
@@ -183,4 +185,40 @@ func (l *LinkedList) Values() []string {
 		values = append(values, cell.Data)
 	}
 	return values
+}
+
+/***************************************************
+ * Stack operations on LinkedList
+ ***************************************************/
+func (l *LinkedList) Push(value string) {
+	l.sentinel.AddAfter(&Cell{value, l.sentinel.Next})
+}
+
+func (l *LinkedList) Pop() string {
+	if l.IsEmpty() {
+		return ""
+	}
+	cell := l.sentinel.DeleteAfter()
+	if cell == nil {
+		return ""
+	}
+	return cell.Data
+}
+
+/***************************************************
+ * Cycle Detection and Handling operations on LinkedList
+ ***************************************************/
+func (l *LinkedList) HasLoop() bool {
+	//implements Floyd's cycle-finding algorithm
+	slow := l.sentinel
+	fast := l.sentinel
+
+	for fast != nil && fast.Next != nil {
+		slow = slow.Next
+		fast = fast.Next.Next
+		if slow == fast {
+			return true
+		}
+	}
+	return false
 }
