@@ -1,6 +1,8 @@
 package lists
 
-import "strings"
+import (
+	"strings"
+)
 
 /***************************************************
  * Node definition and operations
@@ -200,4 +202,20 @@ func (l *DoublyLinkedList) Values() []string {
 		values = append(values, node.Data)
 	}
 	return values
+}
+
+/***************************************************
+ * Queue operations on the DoublyLinkedList
+ ***************************************************/
+func (l *DoublyLinkedList) Dequeue() string {
+	if l.IsEmpty() {
+		return ""
+	}
+
+	dequeued := l.LastNode()
+	return dequeued.Prev.DeleteAfter().Data
+}
+
+func (l *DoublyLinkedList) Enqueue(value string) {
+	l.Add(value)
 }

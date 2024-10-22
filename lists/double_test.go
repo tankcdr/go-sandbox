@@ -514,3 +514,43 @@ func TestDoublyLinkedList_ToSlice_WithValues(t *testing.T) {
 		}
 	}
 }
+
+func TestDoublyLinkedList_Enqueue(t *testing.T) {
+	t.Parallel()
+	list := NewDoublyLinkedList()
+	values := []string{"Apple", "Banana", "Cherry"}
+
+	for _, value := range values {
+		list.Enqueue(value)
+	}
+
+	for i, value := range values {
+		node := list.bottom_sentinel.Prev
+		for j := 0; j < i; j++ {
+			node = node.Prev
+		}
+		if node.Data != value {
+			t.Errorf("node.Data = %q, want %q", node.Data, value)
+		}
+	}
+}
+
+func TestDoublyLinkedList_Dequeue(t *testing.T) {
+	t.Parallel()
+	list := NewDoublyLinkedList()
+	values := []string{"Apple", "Banana", "Cherry"}
+
+	for _, value := range values {
+		list.Enqueue(value)
+	}
+
+	for _, value := range values {
+		dequeued := list.Dequeue()
+		if dequeued == "" {
+			t.Errorf("list.Dequeue() = false, want true")
+		}
+		if dequeued != value {
+			t.Errorf("dequeued = %q, want %q", dequeued, value)
+		}
+	}
+}
