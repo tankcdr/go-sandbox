@@ -23,8 +23,8 @@ func main() {
 	fmt.Println()
 
 	// Make cell 5 point to cell 2.
-	five := list.Find("5")
-	two := list.Find("2")
+	five := list.Find("4")
+	two := list.Find("1")
 	five.Next = two
 
 	fmt.Println(list.ToStringMax(" ", 10))
@@ -36,7 +36,7 @@ func main() {
 	fmt.Println()
 
 	// Make cell 4 point to cell 2.
-	four := list.Find("4")
+	four := list.Find("3")
 	four.Next = two
 
 	fmt.Println(list.ToStringMax(" ", 10))
