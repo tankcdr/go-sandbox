@@ -207,15 +207,43 @@ func (l *DoublyLinkedList) Values() []string {
 /***************************************************
  * Queue operations on the DoublyLinkedList
  ***************************************************/
-func (l *DoublyLinkedList) Dequeue() string {
-	if l.IsEmpty() {
+func (queue *DoublyLinkedList) Dequeue() string {
+	if queue.IsEmpty() {
 		return ""
 	}
 
-	dequeued := l.LastNode()
+	dequeued := queue.LastNode()
 	return dequeued.Prev.DeleteAfter().Data
 }
 
-func (l *DoublyLinkedList) Enqueue(value string) {
-	l.Add(value)
+func (queue *DoublyLinkedList) Enqueue(value string) {
+	queue.Add(value)
+}
+
+/***************************************************
+ * Deque operations on the DoublyLinkedList
+ ***************************************************/
+func (deque *DoublyLinkedList) PushBottom(value string) {
+	deque.bottom_sentinel.Prev.AddAfter(&Node{value, nil, nil})
+}
+
+func (deque *DoublyLinkedList) PushTop(value string) {
+	deque.top_sentinel.AddAfter(&Node{value, nil, nil})
+}
+
+func (deque *DoublyLinkedList) PopBottom() string {
+	if deque.IsEmpty() {
+		return ""
+	}
+
+	popped := deque.bottom_sentinel.Prev
+	return popped.Prev.DeleteAfter().Data
+}
+
+func (deque *DoublyLinkedList) PopTop() string {
+	if deque.IsEmpty() {
+		return ""
+	}
+
+	return deque.top_sentinel.DeleteAfter().Data
 }

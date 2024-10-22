@@ -554,3 +554,99 @@ func TestDoublyLinkedList_Dequeue(t *testing.T) {
 		}
 	}
 }
+
+func TestDoublyLinkedList_Dequeue_Empty(t *testing.T) {
+	t.Parallel()
+	list := NewDoublyLinkedList()
+
+	dequeued := list.Dequeue()
+
+	if dequeued != "" {
+		t.Errorf("dequeued = %q, want \"\"", dequeued)
+	}
+}
+
+func TestDoublyLinkedList_PushBottom(t *testing.T) {
+	t.Parallel()
+	list := NewDoublyLinkedList()
+	values := []string{"Apple", "Banana", "Cherry"}
+
+	for _, value := range values {
+		list.PushBottom(value)
+	}
+
+	for i, value := range values {
+		node := list.top_sentinel.Next
+		for j := 0; j < i; j++ {
+			node = node.Next
+		}
+		if node.Data != value {
+			t.Errorf("node.Data = %q, want %q", node.Data, value)
+		}
+	}
+}
+
+func TestDoublyLinkedList_PopBottom(t *testing.T) {
+	t.Parallel()
+	list := NewDoublyLinkedList()
+	values := []string{"Apple", "Banana", "Cherry"}
+
+	for _, value := range values {
+		list.PushBottom(value)
+	}
+
+	for i := len(values) - 1; i >= 0; i-- {
+		popped := list.PopBottom()
+		if popped == "" {
+			t.Errorf("list.PopBottom() = false, want true")
+		}
+		if popped != values[i] {
+			t.Errorf("popped = %q, want %q", popped, values[i])
+		}
+	}
+}
+
+func TestDoublyLinkedList_PopBottom_Empty(t *testing.T) {
+	t.Parallel()
+	list := NewDoublyLinkedList()
+
+	popped := list.PopBottom()
+
+	if popped != "" {
+		t.Errorf("popped = %q, want \"\"", popped)
+	}
+}
+
+func TestDoublyLinkedList_PushTop(t *testing.T) {
+	t.Parallel()
+	list := NewDoublyLinkedList()
+	values := []string{"Apple", "Banana", "Cherry"}
+
+	for _, value := range values {
+		list.PushTop(value)
+	}
+
+	if list.ToString(", ") != "Cherry, Banana, Apple" {
+		t.Errorf("list: %v\n", list.ToString(", "))
+	}
+}
+
+func TestDoublyLinkedList_PopTop(t *testing.T) {
+	t.Parallel()
+	list := NewDoublyLinkedList()
+	values := []string{"Apple", "Banana", "Cherry"}
+
+	for _, value := range values {
+		list.PushTop(value)
+	}
+
+	for i := len(values) - 1; i >= 0; i-- {
+		popped := list.PopTop()
+		if popped == "" {
+			t.Errorf("list.PopTop() = false, want true")
+		}
+		if popped != values[i] {
+			t.Errorf("popped = %q, want %q", popped, values[i])
+		}
+	}
+}
