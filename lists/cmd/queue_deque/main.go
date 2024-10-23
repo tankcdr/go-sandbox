@@ -9,7 +9,7 @@ import (
 func main() {
 	// Test queue functions.
 	fmt.Printf("*** Queue Functions ***\n")
-	queue := lists.NewDoublyLinkedList()
+	queue := lists.NewDoublyLinkedList[string]()
 	queue.Enqueue("Agate")
 	queue.Enqueue("Beryl")
 	fmt.Printf("%s ", queue.Dequeue())
@@ -26,7 +26,7 @@ func main() {
 	// Test deque functions. Names starting
 	// with F have a fast pass.
 	fmt.Printf("*** Deque Functions ***\n")
-	deque := lists.NewDoublyLinkedList()
+	deque := lists.NewDoublyLinkedList[string]()
 	deque.PushTop("Ann")
 	deque.PushTop("Ben")
 	fmt.Printf("%s ", deque.PopBottom())

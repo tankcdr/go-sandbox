@@ -1,13 +1,14 @@
 package lists
 
 import (
+	"fmt"
 	"testing"
 )
 
 func TestNode_AddAfter(t *testing.T) {
 	t.Parallel()
-	aNode := Node{"Apple", nil, nil}
-	bNode := Node{"Banana", nil, nil}
+	aNode := Node[string]{"Apple", nil, nil}
+	bNode := Node[string]{"Banana", nil, nil}
 
 	aNode.AddAfter(&bNode)
 
@@ -22,8 +23,8 @@ func TestNode_AddAfter(t *testing.T) {
 
 func TestNode_DeleteAfter(t *testing.T) {
 	t.Parallel()
-	aNode := Node{"Apple", nil, nil}
-	bNode := Node{"Banana", nil, nil}
+	aNode := Node[string]{"Apple", nil, nil}
+	bNode := Node[string]{"Banana", nil, nil}
 
 	aNode.AddAfter(&bNode)
 	deleted := aNode.DeleteAfter()
@@ -38,7 +39,7 @@ func TestNode_DeleteAfter(t *testing.T) {
 
 func TestNode_DeleteAfter_Panic(t *testing.T) {
 	t.Parallel()
-	aNode := Node{"Apple", nil, nil}
+	aNode := Node[string]{"Apple", nil, nil}
 
 	defer func() {
 		if r := recover(); r == nil {
@@ -51,7 +52,7 @@ func TestNode_DeleteAfter_Panic(t *testing.T) {
 
 func TestDoublyLinkedList_NewDoublyLinkedList(t *testing.T) {
 	t.Parallel()
-	list := NewDoublyLinkedList()
+	list := NewDoublyLinkedList[string]()
 
 	if list.top_sentinel.Next != list.bottom_sentinel {
 		t.Errorf("list.top_sentinel.Next = %v, want %v", list.top_sentinel.Next, list.bottom_sentinel)
@@ -72,8 +73,8 @@ func TestDoublyLinkedList_NewDoublyLinkedList(t *testing.T) {
 
 func TestDoublyLinkedList_AddList(t *testing.T) {
 	t.Parallel()
-	list := NewDoublyLinkedList()
-	other := NewDoublyLinkedList()
+	list := NewDoublyLinkedList[string]()
+	other := NewDoublyLinkedList[string]()
 	values := []string{"Apple", "Banana", "Cherry"}
 
 	list.AddRange(values)
@@ -90,8 +91,8 @@ func TestDoublyLinkedList_AddList(t *testing.T) {
 
 func TestDoublyLinkedList_AddList_Empty(t *testing.T) {
 	t.Parallel()
-	list := NewDoublyLinkedList()
-	other := NewDoublyLinkedList()
+	list := NewDoublyLinkedList[string]()
+	other := NewDoublyLinkedList[string]()
 
 	list.AddList(*other)
 
@@ -102,8 +103,8 @@ func TestDoublyLinkedList_AddList_Empty(t *testing.T) {
 
 func TestDoublyLinkedList_AddList_WithValues(t *testing.T) {
 	t.Parallel()
-	list := NewDoublyLinkedList()
-	other := NewDoublyLinkedList()
+	list := NewDoublyLinkedList[string]()
+	other := NewDoublyLinkedList[string]()
 	values := []string{"Apple", "Banana", "Cherry"}
 
 	list.Add("Date")
@@ -128,7 +129,7 @@ func TestDoublyLinkedList_AddList_WithValues(t *testing.T) {
 
 func TestDoublyLinkedList_Add(t *testing.T) {
 	t.Parallel()
-	list := NewDoublyLinkedList()
+	list := NewDoublyLinkedList[string]()
 
 	list.Add("Apple")
 
@@ -151,7 +152,7 @@ func TestDoublyLinkedList_Add(t *testing.T) {
 
 func TestDoublyLinkedList_AddRange(t *testing.T) {
 	t.Parallel()
-	list := NewDoublyLinkedList()
+	list := NewDoublyLinkedList[string]()
 
 	values := []string{"Apple", "Banana", "Cherry"}
 
@@ -160,7 +161,7 @@ func TestDoublyLinkedList_AddRange(t *testing.T) {
 	node := list.top_sentinel.Next
 	for i, value := range values {
 		if node == nil {
-			t.Errorf("node = nil, want &Node{%q, nil}", value)
+			t.Errorf("node = nil, want &Node[string]{%q, nil}", value)
 		} else if node.Data != value {
 			t.Errorf("node.Data = %q, want %q", node.Data, value)
 		}
@@ -172,7 +173,7 @@ func TestDoublyLinkedList_AddRange(t *testing.T) {
 
 func TestDoublyLinkedList_Append(t *testing.T) {
 	t.Parallel()
-	list := NewDoublyLinkedList()
+	list := NewDoublyLinkedList[string]()
 	values := []string{"Apple", "Banana", "Cherry"}
 
 	list.AddRange(values)
@@ -187,7 +188,7 @@ func TestDoublyLinkedList_Append(t *testing.T) {
 
 func TestDoublyLinkedList_Clone(t *testing.T) {
 	t.Parallel()
-	list := NewDoublyLinkedList()
+	list := NewDoublyLinkedList[string]()
 	values := []string{"Apple", "Banana", "Cherry"}
 
 	list.AddRange(values)
@@ -205,7 +206,7 @@ func TestDoublyLinkedList_Clone(t *testing.T) {
 
 func TestDoublyLinkedList_ToStringMax(t *testing.T) {
 	t.Parallel()
-	list := NewDoublyLinkedList()
+	list := NewDoublyLinkedList[string]()
 	values := []string{"Apple", "Banana", "Cherry"}
 
 	list.AddRange(values)
@@ -220,7 +221,7 @@ func TestDoublyLinkedList_ToStringMax(t *testing.T) {
 
 func TestDoublyLinkedList_Values(t *testing.T) {
 	t.Parallel()
-	list := NewDoublyLinkedList()
+	list := NewDoublyLinkedList[string]()
 	values := []string{"Apple", "Banana", "Cherry"}
 
 	list.AddRange(values)
@@ -239,7 +240,7 @@ func TestDoublyLinkedList_Values(t *testing.T) {
 
 func TestDoublyLinkedList_toString(t *testing.T) {
 	t.Parallel()
-	list := NewDoublyLinkedList()
+	list := NewDoublyLinkedList[string]()
 	values := []string{"Apple", "Banana", "Cherry"}
 
 	list.AddRange(values)
@@ -254,7 +255,7 @@ func TestDoublyLinkedList_toString(t *testing.T) {
 
 func TestDoublyLinkedList_Length_NotEmpty(t *testing.T) {
 	t.Parallel()
-	list := NewDoublyLinkedList()
+	list := NewDoublyLinkedList[string]()
 	values := []string{"Apple", "Banana", "Cherry"}
 
 	list.AddRange(values)
@@ -269,7 +270,7 @@ func TestDoublyLinkedList_Length_NotEmpty(t *testing.T) {
 
 func TestDoublyLinkedList_Length_Empty(t *testing.T) {
 	t.Parallel()
-	list := NewDoublyLinkedList()
+	list := NewDoublyLinkedList[string]()
 
 	got := list.Length()
 	want := 0
@@ -281,7 +282,7 @@ func TestDoublyLinkedList_Length_Empty(t *testing.T) {
 
 func TestDoublyLinkedList_isEmpty_Empty(t *testing.T) {
 	t.Parallel()
-	list := NewDoublyLinkedList()
+	list := NewDoublyLinkedList[string]()
 
 	if !list.IsEmpty() {
 		t.Errorf("list.isEmpty() = false, want true")
@@ -290,7 +291,7 @@ func TestDoublyLinkedList_isEmpty_Empty(t *testing.T) {
 
 func TestDoublyLinkedList_isEmpty_NotEmpty(t *testing.T) {
 	t.Parallel()
-	list := NewDoublyLinkedList()
+	list := NewDoublyLinkedList[string]()
 	values := []string{"Apple", "Banana", "Cherry"}
 
 	list.AddRange(values)
@@ -302,7 +303,7 @@ func TestDoublyLinkedList_isEmpty_NotEmpty(t *testing.T) {
 
 func TestDoublyLinkedList_Find(t *testing.T) {
 	t.Parallel()
-	list := NewDoublyLinkedList()
+	list := NewDoublyLinkedList[string]()
 	values := []string{"Apple", "Banana", "Cherry"}
 
 	list.AddRange(values)
@@ -310,7 +311,7 @@ func TestDoublyLinkedList_Find(t *testing.T) {
 	for _, value := range values {
 		node := list.Find(value)
 		if node == nil {
-			t.Errorf("node = nil, want &Node{%q, nil}", value)
+			t.Errorf("node = nil, want &Node[string]{%q, nil}", value)
 		} else if node.Data != value {
 			t.Errorf("node.Data = %q, want %q", node.Data, value)
 		}
@@ -319,12 +320,14 @@ func TestDoublyLinkedList_Find(t *testing.T) {
 
 func TestDoublyLinkedList_Find_NotFound(t *testing.T) {
 	t.Parallel()
-	list := NewDoublyLinkedList()
+	list := NewDoublyLinkedList[string]()
 	values := []string{"Apple", "Banana", "Cherry"}
 
 	list.AddRange(values)
 
 	node := list.Find("Date")
+
+	fmt.Printf("node: %v\n", node)
 
 	if node != nil {
 		t.Errorf("node = %v, want nil", node)
@@ -333,7 +336,7 @@ func TestDoublyLinkedList_Find_NotFound(t *testing.T) {
 
 func TestDoublyLinkedList_Contains(t *testing.T) {
 	t.Parallel()
-	list := NewDoublyLinkedList()
+	list := NewDoublyLinkedList[string]()
 	values := []string{"Apple", "Banana", "Cherry"}
 
 	list.AddRange(values)
@@ -347,7 +350,7 @@ func TestDoublyLinkedList_Contains(t *testing.T) {
 
 func TestDoublyLinkedList_Contains_NotFound(t *testing.T) {
 	t.Parallel()
-	list := NewDoublyLinkedList()
+	list := NewDoublyLinkedList[string]()
 	values := []string{"Apple", "Banana", "Cherry"}
 
 	list.AddRange(values)
@@ -359,7 +362,7 @@ func TestDoublyLinkedList_Contains_NotFound(t *testing.T) {
 
 func TestDoublyLinkedList_Remove(t *testing.T) {
 	t.Parallel()
-	list := NewDoublyLinkedList()
+	list := NewDoublyLinkedList[string]()
 	values := []string{"Apple", "Banana", "Cherry"}
 
 	list.AddRange(values)
@@ -374,7 +377,7 @@ func TestDoublyLinkedList_Remove(t *testing.T) {
 
 func TestDoublyLinkedList_Remove_NotFound(t *testing.T) {
 	t.Parallel()
-	list := NewDoublyLinkedList()
+	list := NewDoublyLinkedList[string]()
 	values := []string{"Apple", "Banana", "Cherry"}
 
 	list.AddRange(values)
@@ -388,7 +391,7 @@ func TestDoublyLinkedList_Remove_NotFound(t *testing.T) {
 
 func TestDoublyLinkedList_RemoveAt(t *testing.T) {
 	t.Parallel()
-	list := NewDoublyLinkedList()
+	list := NewDoublyLinkedList[string]()
 	values := []string{"Apple", "Banana", "Cherry"}
 
 	list.AddRange(values)
@@ -412,7 +415,7 @@ func TestDoublyLinkedList_RemoveAt(t *testing.T) {
 
 func TestDoublyLinkedList_RemoveAt_OutOfRange(t *testing.T) {
 	t.Parallel()
-	list := NewDoublyLinkedList()
+	list := NewDoublyLinkedList[string]()
 	values := []string{"Apple", "Banana", "Cherry"}
 
 	list.AddRange(values)
@@ -426,7 +429,7 @@ func TestDoublyLinkedList_RemoveAt_OutOfRange(t *testing.T) {
 
 func TestDoublyLinkedList_LastNode(t *testing.T) {
 	t.Parallel()
-	list := NewDoublyLinkedList()
+	list := NewDoublyLinkedList[string]()
 	values := []string{"Apple", "Banana", "Cherry"}
 
 	list.AddRange(values)
@@ -440,7 +443,7 @@ func TestDoublyLinkedList_LastNode(t *testing.T) {
 
 func TestDoublyLinkedList_Clear(t *testing.T) {
 	t.Parallel()
-	list := NewDoublyLinkedList()
+	list := NewDoublyLinkedList[string]()
 	values := []string{"Apple", "Banana", "Cherry"}
 
 	list.AddRange(values)
@@ -454,7 +457,7 @@ func TestDoublyLinkedList_Clear(t *testing.T) {
 
 func TestDoublyLinkedList_Clear_Empty(t *testing.T) {
 	t.Parallel()
-	list := NewDoublyLinkedList()
+	list := NewDoublyLinkedList[string]()
 
 	list.Clear()
 
@@ -465,7 +468,7 @@ func TestDoublyLinkedList_Clear_Empty(t *testing.T) {
 
 func TestDoublyLinkedList_ToSlice(t *testing.T) {
 	t.Parallel()
-	list := NewDoublyLinkedList()
+	list := NewDoublyLinkedList[string]()
 	values := []string{"Apple", "Banana", "Cherry"}
 
 	list.AddRange(values)
@@ -484,7 +487,7 @@ func TestDoublyLinkedList_ToSlice(t *testing.T) {
 
 func TestDoublyLinkedList_ToSlice_Empty(t *testing.T) {
 	t.Parallel()
-	list := NewDoublyLinkedList()
+	list := NewDoublyLinkedList[string]()
 
 	got := list.ToSlice()
 
@@ -495,7 +498,7 @@ func TestDoublyLinkedList_ToSlice_Empty(t *testing.T) {
 
 func TestDoublyLinkedList_ToSlice_WithValues(t *testing.T) {
 	t.Parallel()
-	list := NewDoublyLinkedList()
+	list := NewDoublyLinkedList[string]()
 	values := []string{"Apple", "Banana", "Cherry"}
 
 	list.AddRange(values)
@@ -517,7 +520,7 @@ func TestDoublyLinkedList_ToSlice_WithValues(t *testing.T) {
 
 func TestDoublyLinkedList_Enqueue(t *testing.T) {
 	t.Parallel()
-	list := NewDoublyLinkedList()
+	list := NewDoublyLinkedList[string]()
 	values := []string{"Apple", "Banana", "Cherry"}
 
 	for _, value := range values {
@@ -537,7 +540,7 @@ func TestDoublyLinkedList_Enqueue(t *testing.T) {
 
 func TestDoublyLinkedList_Dequeue(t *testing.T) {
 	t.Parallel()
-	list := NewDoublyLinkedList()
+	list := NewDoublyLinkedList[string]()
 	values := []string{"Apple", "Banana", "Cherry"}
 
 	for _, value := range values {
@@ -557,7 +560,7 @@ func TestDoublyLinkedList_Dequeue(t *testing.T) {
 
 func TestDoublyLinkedList_Dequeue_Empty(t *testing.T) {
 	t.Parallel()
-	list := NewDoublyLinkedList()
+	list := NewDoublyLinkedList[string]()
 
 	dequeued := list.Dequeue()
 
@@ -568,7 +571,7 @@ func TestDoublyLinkedList_Dequeue_Empty(t *testing.T) {
 
 func TestDoublyLinkedList_PushBottom(t *testing.T) {
 	t.Parallel()
-	list := NewDoublyLinkedList()
+	list := NewDoublyLinkedList[string]()
 	values := []string{"Apple", "Banana", "Cherry"}
 
 	for _, value := range values {
@@ -588,7 +591,7 @@ func TestDoublyLinkedList_PushBottom(t *testing.T) {
 
 func TestDoublyLinkedList_PopBottom(t *testing.T) {
 	t.Parallel()
-	list := NewDoublyLinkedList()
+	list := NewDoublyLinkedList[string]()
 	values := []string{"Apple", "Banana", "Cherry"}
 
 	for _, value := range values {
@@ -608,7 +611,7 @@ func TestDoublyLinkedList_PopBottom(t *testing.T) {
 
 func TestDoublyLinkedList_PopBottom_Empty(t *testing.T) {
 	t.Parallel()
-	list := NewDoublyLinkedList()
+	list := NewDoublyLinkedList[string]()
 
 	popped := list.PopBottom()
 
@@ -619,7 +622,7 @@ func TestDoublyLinkedList_PopBottom_Empty(t *testing.T) {
 
 func TestDoublyLinkedList_PushTop(t *testing.T) {
 	t.Parallel()
-	list := NewDoublyLinkedList()
+	list := NewDoublyLinkedList[string]()
 	values := []string{"Apple", "Banana", "Cherry"}
 
 	for _, value := range values {
@@ -633,7 +636,7 @@ func TestDoublyLinkedList_PushTop(t *testing.T) {
 
 func TestDoublyLinkedList_PopTop(t *testing.T) {
 	t.Parallel()
-	list := NewDoublyLinkedList()
+	list := NewDoublyLinkedList[string]()
 	values := []string{"Apple", "Banana", "Cherry"}
 
 	for _, value := range values {

@@ -1,19 +1,21 @@
 package lists
 
 import (
+	"fmt"
+	"reflect"
 	"strings"
 )
 
 /***************************************************
  * Node definition and operations
  ***************************************************/
-type Node struct {
-	Data string
-	Next *Node
-	Prev *Node
+type Node[T any] struct {
+	Data T
+	Next *Node[T]
+	Prev *Node[T]
 }
 
-func (me *Node) AddAfter(node *Node) {
+func (me *Node[T]) AddAfter(node *Node[T]) {
 	if me.Next != nil {
 		me.Next.Prev = node
 	}
@@ -22,7 +24,7 @@ func (me *Node) AddAfter(node *Node) {
 	me.Next = node
 }
 
-func (me *Node) DeleteAfter() *Node {
+func (me *Node[T]) DeleteAfter() *Node[T] {
 	if me.Next == nil {
 		panic("Attempt to delete nonexistent node")
 	}
@@ -42,23 +44,23 @@ func (me *Node) DeleteAfter() *Node {
 /***************************************************
  * DoublyLinkedList definition and operations
  ***************************************************/
-type DoublyLinkedList struct {
-	top_sentinel    *Node
-	bottom_sentinel *Node
+type DoublyLinkedList[T any] struct {
+	top_sentinel    *Node[T]
+	bottom_sentinel *Node[T]
 }
 
-func NewDoublyLinkedList() *DoublyLinkedList {
-	list := &DoublyLinkedList{&Node{}, &Node{}}
+func NewDoublyLinkedList[T any]() *DoublyLinkedList[T] {
+	list := &DoublyLinkedList[T]{&Node[T]{}, &Node[T]{}}
 	list.top_sentinel.Next = list.bottom_sentinel
 	list.bottom_sentinel.Prev = list.top_sentinel
 	return list
 }
 
-func (l *DoublyLinkedList) Add(value string) {
-	l.top_sentinel.AddAfter(&Node{value, nil, nil})
+func (l *DoublyLinkedList[T]) Add(value T) {
+	l.top_sentinel.AddAfter(&Node[T]{value, nil, nil})
 }
 
-func (l *DoublyLinkedList) AddList(list DoublyLinkedList) {
+func (l *DoublyLinkedList[T]) AddList(list DoublyLinkedList[T]) {
 	if list.Length() == 0 {
 		return
 	}
@@ -66,64 +68,65 @@ func (l *DoublyLinkedList) AddList(list DoublyLinkedList) {
 	lastNode := l.LastNode()
 
 	for node := list.top_sentinel.Next; node != list.bottom_sentinel; node = node.Next {
-		lastNode.AddAfter(&Node{node.Data, nil, nil})
+		lastNode.AddAfter(&Node[T]{node.Data, nil, nil})
 		lastNode = lastNode.Next
 	}
 }
 
-func (l *DoublyLinkedList) AddRange(values []string) {
+func (l *DoublyLinkedList[T]) AddRange(values []T) {
 	lastNode := l.LastNode()
 
 	for _, value := range values {
-		lastNode.AddAfter(&Node{value, nil, nil})
+		lastNode.AddAfter(&Node[T]{value, nil, nil})
 		lastNode = lastNode.Next
 	}
 }
 
-func (l *DoublyLinkedList) Append(value string) {
+func (l *DoublyLinkedList[T]) Append(value T) {
 	lastNode := l.LastNode()
-	lastNode.AddAfter(&Node{value, nil, nil})
+	lastNode.AddAfter(&Node[T]{value, nil, nil})
 }
 
-func (l *DoublyLinkedList) Clear() {
+func (l *DoublyLinkedList[T]) Clear() {
 	l.top_sentinel.Next = l.bottom_sentinel
 	l.top_sentinel.Prev = nil
 	l.bottom_sentinel.Prev = l.top_sentinel
 	l.bottom_sentinel.Next = nil
 }
 
-func (l *DoublyLinkedList) Clone() *DoublyLinkedList {
-	clone := NewDoublyLinkedList()
+func (l *DoublyLinkedList[T]) Clone() *DoublyLinkedList[T] {
+	clone := NewDoublyLinkedList[T]()
 	clone.AddList(*l)
 	return clone
 }
 
-func (l *DoublyLinkedList) Contains(value string) bool {
+func (l *DoublyLinkedList[T]) Contains(value T) bool {
 	node := l.Find(value)
 	return node != nil
 }
 
-func (l *DoublyLinkedList) Find(value string) *Node {
-	for node := l.top_sentinel.Next; node != nil; node = node.Next {
-		if node.Data == value {
+func (l *DoublyLinkedList[T]) Find(value T) *Node[T] {
+	for node := l.top_sentinel.Next; node != l.bottom_sentinel; node = node.Next {
+		if reflect.DeepEqual(node.Data, value) {
 			return node
 		}
 	}
+
 	return nil
 }
 
-func (l *DoublyLinkedList) IsEmpty() bool {
+func (l *DoublyLinkedList[T]) IsEmpty() bool {
 	if l.top_sentinel.Next != l.bottom_sentinel {
 		return false
 	}
 	return true
 }
 
-func (l *DoublyLinkedList) LastNode() *Node {
+func (l *DoublyLinkedList[T]) LastNode() *Node[T] {
 	return l.bottom_sentinel.Prev
 }
 
-func (l *DoublyLinkedList) Length() int {
+func (l *DoublyLinkedList[T]) Length() int {
 	//likely better to keep a running count
 	//TODO: implement a counter in the DoublyLinkedList struct
 	var length int
@@ -133,10 +136,10 @@ func (l *DoublyLinkedList) Length() int {
 	return length
 }
 
-func (l *DoublyLinkedList) Remove(value string) *Node {
-	var prev *Node
+func (l *DoublyLinkedList[T]) Remove(value T) *Node[T] {
+	var prev *Node[T]
 	for node := l.top_sentinel; node.Next != l.bottom_sentinel; node = node.Next {
-		if node.Next.Data == value {
+		if reflect.DeepEqual(node.Next.Data, value) {
 			prev = node
 			break
 		}
@@ -147,8 +150,8 @@ func (l *DoublyLinkedList) Remove(value string) *Node {
 	return nil
 }
 
-func (l *DoublyLinkedList) RemoveAt(index int) *Node {
-	var prev *Node
+func (l *DoublyLinkedList[T]) RemoveAt(index int) *Node[T] {
+	var prev *Node[T]
 	for i, node := 0, l.top_sentinel; node.Next != l.bottom_sentinel; i, node = i+1, node.Next {
 		if i == index {
 			prev = node
@@ -161,8 +164,8 @@ func (l *DoublyLinkedList) RemoveAt(index int) *Node {
 	return nil
 }
 
-func (l *DoublyLinkedList) ToSlice() []Node {
-	var slice []Node
+func (l *DoublyLinkedList[T]) ToSlice() []Node[T] {
+	var slice []Node[T]
 
 	for node := l.top_sentinel.Next; node != l.bottom_sentinel; node = node.Next {
 		slice = append(slice, *node)
@@ -170,19 +173,19 @@ func (l *DoublyLinkedList) ToSlice() []Node {
 	return slice
 }
 
-func (l *DoublyLinkedList) ToString(separator string) string {
+func (l *DoublyLinkedList[T]) ToString(separator string) string {
 	var builder strings.Builder
 
 	for node := l.top_sentinel.Next; node != l.bottom_sentinel; node = node.Next {
 		if node != l.top_sentinel.Next {
 			builder.WriteString(separator)
 		}
-		builder.WriteString(node.Data)
+		builder.WriteString(fmt.Sprintf("%v", node.Data))
 	}
 	return builder.String()
 }
 
-func (l *DoublyLinkedList) ToStringMax(separator string, max int) string {
+func (l *DoublyLinkedList[T]) ToStringMax(separator string, max int) string {
 	var builder strings.Builder
 
 	i := 0
@@ -190,14 +193,14 @@ func (l *DoublyLinkedList) ToStringMax(separator string, max int) string {
 		if i > 0 {
 			builder.WriteString(separator)
 		}
-		builder.WriteString(node.Data)
+		builder.WriteString(fmt.Sprintf("%v", node.Data))
 		i++
 	}
 	return builder.String()
 }
 
-func (l *DoublyLinkedList) Values() []string {
-	var values []string
+func (l *DoublyLinkedList[T]) Values() []T {
+	var values []T
 	for node := l.top_sentinel.Next; node != l.bottom_sentinel; node = node.Next {
 		values = append(values, node.Data)
 	}
@@ -207,42 +210,45 @@ func (l *DoublyLinkedList) Values() []string {
 /***************************************************
  * Queue operations on the DoublyLinkedList
  ***************************************************/
-func (queue *DoublyLinkedList) Dequeue() string {
+func (queue *DoublyLinkedList[T]) Dequeue() T {
 	if queue.IsEmpty() {
-		return ""
+		var zeroValue T
+		return zeroValue
 	}
 
 	dequeued := queue.LastNode()
 	return dequeued.Prev.DeleteAfter().Data
 }
 
-func (queue *DoublyLinkedList) Enqueue(value string) {
+func (queue *DoublyLinkedList[T]) Enqueue(value T) {
 	queue.Add(value)
 }
 
 /***************************************************
  * Deque operations on the DoublyLinkedList
  ***************************************************/
-func (deque *DoublyLinkedList) PushBottom(value string) {
-	deque.bottom_sentinel.Prev.AddAfter(&Node{value, nil, nil})
+func (deque *DoublyLinkedList[T]) PushBottom(value T) {
+	deque.bottom_sentinel.Prev.AddAfter(&Node[T]{value, nil, nil})
 }
 
-func (deque *DoublyLinkedList) PushTop(value string) {
-	deque.top_sentinel.AddAfter(&Node{value, nil, nil})
+func (deque *DoublyLinkedList[T]) PushTop(value T) {
+	deque.top_sentinel.AddAfter(&Node[T]{value, nil, nil})
 }
 
-func (deque *DoublyLinkedList) PopBottom() string {
+func (deque *DoublyLinkedList[T]) PopBottom() T {
 	if deque.IsEmpty() {
-		return ""
+		var zeroValue T
+		return zeroValue
 	}
 
 	popped := deque.bottom_sentinel.Prev
 	return popped.Prev.DeleteAfter().Data
 }
 
-func (deque *DoublyLinkedList) PopTop() string {
+func (deque *DoublyLinkedList[T]) PopTop() T {
 	if deque.IsEmpty() {
-		return ""
+		var zeroValue T
+		return zeroValue
 	}
 
 	return deque.top_sentinel.DeleteAfter().Data
