@@ -1,6 +1,9 @@
 package recursion
 
-import "math"
+import (
+	"math"
+	"math/big"
+)
 
 // Factorial calculates the factorial of a given number
 func Factorial(n uint64) uint64 {
@@ -15,4 +18,14 @@ func Factorial(n uint64) uint64 {
 	}
 
 	return result * n
+}
+
+func FactorialBig(n uint64) *big.Int {
+	if n == 0 || n == 1 {
+		return big.NewInt(1)
+	}
+
+	result := FactorialBig(n - 1)
+
+	return result.Mul(result, big.NewInt(int64(n)))
 }
