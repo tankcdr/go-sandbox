@@ -15,13 +15,13 @@ type Offset struct {
 
 var moveOffsets = []Offset{
 	{-2, 1},
-	{-1, 2},
-	{1, 2},
+	{-2, -1},
 	{2, 1},
 	{2, -1},
+	{1, 2},
 	{1, -2},
+	{-1, 2},
 	{-1, -2},
-	{-2, -1},
 }
 
 // Create a board of size m x n
@@ -60,6 +60,7 @@ func StartTour(board [][]int, startingRow int, startingCol int, requiredClosedTo
 func FindTour(board [][]int, numRows int, numCols int, currentRow int, currentCol int, numVisited int, requiredClosed bool) bool {
 	numVisited++
 
+	// Check if we have visited all the squares
 	if numVisited == numRows*numCols {
 
 		if !requiredClosed {
@@ -81,6 +82,7 @@ func FindTour(board [][]int, numRows int, numCols int, currentRow int, currentCo
 	// Randomize the order of the moves
 	rand.Shuffle(len(moveOffsets), func(i, j int) { moveOffsets[i], moveOffsets[j] = moveOffsets[j], moveOffsets[i] })
 
+	//walk through all possible moves
 	for _, offset := range moveOffsets {
 		newRow := currentRow + offset.Row
 		newCol := currentCol + offset.Col
@@ -95,6 +97,7 @@ func FindTour(board [][]int, numRows int, numCols int, currentRow int, currentCo
 			board[newRow][newCol] = UNVISITED
 		}
 	}
+
 	return false
 }
 
