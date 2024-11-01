@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	const numRows = 12
+	const numRows = 13
 	board := nqueens.MakeBoard(numRows)
 
 	start := time.Now()
