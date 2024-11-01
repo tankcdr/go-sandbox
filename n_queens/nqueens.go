@@ -26,11 +26,11 @@ func DumpBoard(board [][]string) {
 	}
 }
 
-func NQueens(board [][]string, r, c int) bool {
+func NQueens(board [][]string, r, c, placed int) bool {
 	max := len(board)
 
 	if r >= max {
-		return boardIsASolution(board)
+		return boardIsASolution(board, placed)
 	}
 
 	// Find the next square.
@@ -41,13 +41,13 @@ func NQueens(board [][]string, r, c int) bool {
 		nextC = 0
 	}
 
-	if NQueens(board, nextR, nextC) {
+	if NQueens(board, nextR, nextC, placed) {
 		return true
 	}
 
 	board[r][c] = QUEEN
 	if boardIsLegal(board) {
-		if NQueens(board, nextR, nextC) {
+		if NQueens(board, nextR, nextC, placed+1) {
 			return true
 		}
 	}
@@ -57,11 +57,14 @@ func NQueens(board [][]string, r, c int) bool {
 }
 
 // Checks if the current state a solution
-func boardIsASolution(board [][]string) bool {
+func boardIsASolution(board [][]string, placed int) bool {
+	//optimizing by remove countQueens
 	if boardIsLegal(board) {
-		return countQueens(board) == len(board)
+		return placed >= len(board)
+		//return countQueens(board) == len(board)
 	}
 	return false
+
 }
 
 // Count the number of queens on the board

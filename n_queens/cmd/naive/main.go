@@ -7,11 +7,11 @@ import (
 )
 
 func main() {
-	const numRows = 8
+	const numRows = 12
 	board := nqueens.MakeBoard(numRows)
 
 	start := time.Now()
-	success := nqueens.NQueens(board, 0, 0)
+	success := nqueens.NQueens(board, 0, 0, 0)
 	elapsed := time.Since(start)
 
 	if success {
