@@ -39,6 +39,7 @@ func DumpBoard(board [][]int) {
 	}
 }
 
+// Solve the N-Queens problem by placing queens by row
 func NQueens(board [][]int, r, c, placed int) bool {
 	max := len(board)
 
@@ -69,6 +70,32 @@ func NQueens(board [][]int, r, c, placed int) bool {
 		//}
 
 		removeQueen(board, r, c, max)
+	}
+
+	return false
+}
+
+// Solve the N-Queens problem by placing queens by column
+// This is a recursive function that places a queen in the current column
+// and then recursively tries to place a queen in the next column
+func NQueensByColumn(board [][]int, numRows, c int) bool {
+
+	isLegal := boardIsLegal(board)
+
+	if c >= numRows {
+		return isLegal
+	} else if !isLegal {
+		return isLegal
+	}
+
+	for r := 0; r < numRows; r++ {
+		if board[r][c] == FREE {
+			placeQueen(board, r, c, numRows)
+			if NQueensByColumn(board, numRows, c+1) {
+				return true
+			}
+			removeQueen(board, r, c, numRows)
+		}
 	}
 
 	return false
@@ -120,11 +147,11 @@ func adjustAttacks(board [][]int, r0, c0, dr, dc, max, value int) {
 // Checks if the current state a solution
 func boardIsASolution(board [][]int, placed int) bool {
 	//optimizing by remove countQueens
-	//if boardIsLegal(board) {
-	return placed >= len(board)
-	//return countQueens(board) == len(board)
-	//}
-	//return false
+	if boardIsLegal(board) {
+		return placed >= len(board)
+		//return countQueens(board) == len(board)
+	}
+	return false
 
 }
 
@@ -143,7 +170,7 @@ func countQueens(board [][]string) int {
 }*/
 
 // Check if the board is legal (no queens attacking each other)
-/*func boardIsLegal(board [][]int) bool {
+func boardIsLegal(board [][]int) bool {
 	//assumes m x m board
 	max := len(board)
 
@@ -180,6 +207,9 @@ func countQueens(board [][]string) int {
 	return true
 }
 
+// Check if a series of squares is legal (no queens attacking each other)
+// series = row, column, or diagonal depending upon the parameters
+// dr, dc = direction to move in the series
 func seriesIsLegal(board [][]int, r0, c0, dr, dc int) bool {
 	//assumes m x m board
 	max := len(board)
@@ -198,4 +228,3 @@ func seriesIsLegal(board [][]int, r0, c0, dr, dc int) bool {
 
 	return true
 }
-*/
