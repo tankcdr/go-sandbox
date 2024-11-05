@@ -1,7 +1,6 @@
 package lists
 
 import (
-	"fmt"
 	"testing"
 )
 
@@ -327,8 +326,6 @@ func TestDoublyLinkedList_Find_NotFound(t *testing.T) {
 
 	node := list.Find("Date")
 
-	fmt.Printf("node: %v\n", node)
-
 	if node != nil {
 		t.Errorf("node = %v, want nil", node)
 	}
@@ -651,5 +648,66 @@ func TestDoublyLinkedList_PopTop(t *testing.T) {
 		if popped != values[i] {
 			t.Errorf("popped = %q, want %q", popped, values[i])
 		}
+	}
+}
+
+func TestDoublyLinkedList_Pop_String(t *testing.T) {
+	t.Parallel()
+
+	list := NewDoublyLinkedList[string]()
+	values := []string{"Apple", "Banana", "Cherry"}
+
+	list.AddRange(values)
+
+	popped, error := list.Pop()
+
+	if error != nil {
+		t.Errorf("error = %v, want nil", error)
+	}
+
+	if popped == "" {
+		t.Errorf("popped = nil, want &Node{Cherry, nil}")
+	} else if popped != "Apple" {
+		t.Errorf("popped.Data = %q, want %q", popped, "Apple")
+	}
+}
+
+func TestDoublyLinkedList_Pop_Int(t *testing.T) {
+	t.Parallel()
+	list := NewDoublyLinkedList[int]()
+	values := []int{1, 2, 3}
+
+	list.AddRange(values)
+
+	popped, error := list.Pop()
+
+	if error != nil {
+		t.Errorf("error = %v, want nil", error)
+	}
+
+	if popped != 1 {
+		t.Errorf("popped.Data = %q, want %q", popped, int(1))
+	}
+}
+
+func TestDoublyLinkedList_Pop_Empty_String(t *testing.T) {
+	t.Parallel()
+	list := NewDoublyLinkedList[string]()
+
+	_, error := list.Pop()
+
+	if error == nil {
+		t.Errorf("error = nil, want error")
+	}
+}
+
+func TestDoublyLinkedList_Pop_Empty_Int(t *testing.T) {
+	t.Parallel()
+	list := NewDoublyLinkedList[int]()
+
+	_, error := list.Pop()
+
+	if error == nil {
+		t.Errorf("error = nil, want error")
 	}
 }

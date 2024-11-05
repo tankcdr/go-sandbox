@@ -1,6 +1,7 @@
 package lists
 
 import (
+	"errors"
 	"fmt"
 	"reflect"
 	"strings"
@@ -252,4 +253,23 @@ func (deque *DoublyLinkedList[T]) PopTop() T {
 	}
 
 	return deque.top_sentinel.DeleteAfter().Data
+}
+
+/***************************************************
+ * Stack operations on DoublyLinkedList
+ ***************************************************/
+func (l *DoublyLinkedList[T]) Push(value T) {
+	l.top_sentinel.AddAfter(&Node[T]{value, nil, nil})
+}
+
+func (l *DoublyLinkedList[T]) Pop() (T, error) {
+	var result T
+	if l.IsEmpty() {
+		return result, errors.New("Empty Stack")
+	}
+	cell := l.top_sentinel.DeleteAfter()
+	if cell == nil {
+		return result, errors.New("Empty Stack")
+	}
+	return cell.Data, nil
 }
