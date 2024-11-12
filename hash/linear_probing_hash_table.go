@@ -13,10 +13,11 @@ const SLOT_EMPTY = false
 const LINEAR_PROBE = 1
 
 type LinearProbingHashTableStore[T any] struct {
-	key   string
-	value T
-	used  bool
-	next  int
+	key     string
+	value   T
+	used    bool
+	deleted bool
+	next    int
 }
 
 type LinearProbingHashTable[T any] struct {
@@ -50,6 +51,7 @@ func (lpht *LinearProbingHashTable[T]) Set(key string, value T) {
 		lpht.buckets[index].key = key
 		lpht.buckets[index].value = value
 		lpht.buckets[index].used = SLOT_USED
+		lpht.buckets[index].deleted = false
 
 		if prev != NONE {
 			lpht.buckets[prev].next = index
@@ -87,6 +89,7 @@ func (lpht *LinearProbingHashTable[T]) Delete(key string) bool {
 		lpht.buckets[index].key = EMPTY
 		lpht.buckets[index].value = emptyValue
 		lpht.buckets[index].used = SLOT_EMPTY
+		lpht.buckets[index].deleted = true
 
 		return true
 	}
@@ -189,7 +192,9 @@ func (lpht *LinearProbingHashTable[T]) findSlot(key string) (slot int, previous 
 func (lpht *LinearProbingHashTable[T]) DumpConcise() {
 	// Loop through the array.
 	for i, bucket := range lpht.buckets {
-		if bucket.used == SLOT_EMPTY {
+		if bucket.deleted {
+			fmt.Printf("X")
+		} else if bucket.used == SLOT_EMPTY {
 			// This spot is empty.
 			fmt.Printf(".")
 		} else {
@@ -215,4 +220,66 @@ func (lpht *LinearProbingHashTable[T]) AveProbeSequenceLength() float32 {
 		}
 	}
 	return float32(totalLength) / float32(numValues)
+}
+
+func (lpht *LinearProbingHashTable[T]) Probe(key string) int {
+	// Hash the key.
+	hash := Hash_djb2(key) % lpht.capacity
+	fmt.Printf("Probing %s (%d)\n", key, hash)
+
+	// Keep track of a deleted spot if we find one.
+	deletedIndex := -1
+
+	// Probe up to lpht.capacity times.
+	for i := 0; i < lpht.capacity; i++ {
+		index := (hash + i) % lpht.capacity
+
+		fmt.Printf("    %d: ", index)
+		if lpht.buckets[index] == nil {
+			fmt.Printf("---\n")
+		} else if lpht.buckets[index].deleted {
+			fmt.Printf("xxx\n")
+		} else {
+			fmt.Printf("%v\n", lpht.buckets[index])
+		}
+
+		// If this spot is empty, the value isn't in the table.
+		if lpht.buckets[index] == nil {
+			// If we found a deleted spot, return its index.
+			if deletedIndex >= 0 {
+				fmt.Printf("    Returning deleted index %d\n", deletedIndex)
+				return deletedIndex
+			}
+
+			// Return this index, which holds nil.
+			fmt.Printf("    Returning nil index %d\n", index)
+			return index
+		}
+
+		// If this spot is deleted, remember where it is.
+		if lpht.buckets[index].deleted {
+			if deletedIndex < 0 {
+				deletedIndex = index
+			}
+		} else if lpht.buckets[index].key == key {
+			// If this cell holds the key, return its data.
+			fmt.Printf("    Returning found index %d\n", index)
+			return index
+		}
+
+		// Otherwise continue the loop.
+	}
+
+	// If we get here, then the key is not
+	// in the table and the table is full.
+
+	// If we found a deleted spot, return it.
+	if deletedIndex >= 0 {
+		fmt.Printf("    Returning deleted index %d\n", deletedIndex)
+		return deletedIndex
+	}
+
+	// There's nowhere to put a new entry.
+	fmt.Printf("    Table is full\n")
+	return -1
 }

@@ -33,16 +33,28 @@ func main() {
 	}
 	hashTable.Dump()
 
-	fmt.Printf("Table contains Sally Owens: %t\n", hashTable.Contains("Sally Owens"))
-	fmt.Printf("Table contains Dan Deever: %t\n", hashTable.Contains("Dan Deever"))
+	hashTable.Probe("Hank Hardy")
+	fmt.Printf("Table Contains Sally Owens: %t\n", hashTable.Contains("Sally Owens"))
+	fmt.Printf("Table Contains Dan Deever: %t\n", hashTable.Contains("Dan Deever"))
 	fmt.Println("Deleting Dan Deever")
 	hashTable.Delete("Dan Deever")
-	fmt.Printf("Table contains Dan Deever: %t\n", hashTable.Contains("Dan Deever"))
+	fmt.Printf("Table Contains Dan Deever: %t\n", hashTable.Contains("Dan Deever"))
 	fmt.Printf("Sally Owens: %s\n", hashTable.Get("Sally Owens"))
 	fmt.Printf("Fred Franklin: %s\n", hashTable.Get("Fred Franklin"))
 	fmt.Println("Changing Fred Franklin")
 	hashTable.Set("Fred Franklin", Employee{"Fred Franklin", "202-555-0100"})
 	fmt.Printf("Fred Franklin: %s\n", hashTable.Get("Fred Franklin"))
+	hashTable.Dump()
+
+	hashTable.Probe("Ann Archer")
+	hashTable.Probe("Bob Baker")
+	hashTable.Probe("Cindy Cant")
+	hashTable.Probe("Dan Deever")
+	hashTable.Probe("Edwina Eager")
+	hashTable.Probe("Fred Franklin")
+	hashTable.Probe("Gina Gable")
+	hashTable.Set("Hank Hardy", Employee{"Fred Franklin", "202-555-0100"})
+	hashTable.Probe("Hank Hardy")
 
 	// Look at clustering.
 	fmt.Println(time.Now())                   // Print the time so it will compile if we use a fixed seed.
@@ -52,17 +64,19 @@ func main() {
 	bigHashTable := hash.NewLinearProbingHashTable[string](bigCapacity)
 	numItems := int(float32(bigCapacity) * 0.9)
 
+	key := "899-156610"
+
 	for i := 0; i < numItems; i++ {
 		str := fmt.Sprintf("%d-%d", i, random.Intn(1000000))
-
+		if i == 500 {
+			key = str
+		}
 		bigHashTable.Set(str, str)
 	}
 
-	bigHashTable.Delete("0-0")
+	bigHashTable.Delete(key)
 
 	bigHashTable.DumpConcise()
-	fmt.Printf("Average probe sequence length: %f\n",
-
+	fmt.Printf("Average Probe sequence length: %f\n",
 		bigHashTable.AveProbeSequenceLength())
-
 }
