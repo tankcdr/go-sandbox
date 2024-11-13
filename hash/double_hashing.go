@@ -4,31 +4,31 @@ import (
 	"fmt"
 )
 
-type QuadraticProbingHashTableStore[T any] struct {
+type DoubleHashTableStore[T any] struct {
 	key     string
 	value   T
 	deleted bool
 }
 
-type QuadraticProbingHashTable[T any] struct {
+type DoubleHashTable[T any] struct {
 	capacity int
-	buckets  []*QuadraticProbingHashTableStore[T]
+	buckets  []*DoubleHashTableStore[T]
 }
 
-func NewQuadraticProbingHashTable[T any](capacity int) *QuadraticProbingHashTable[T] {
-	buckets := make([]*QuadraticProbingHashTableStore[T], capacity)
+func NewDoubleHashTable[T any](capacity int) *DoubleHashTable[T] {
+	buckets := make([]*DoubleHashTableStore[T], capacity)
 	for i := range buckets {
-		buckets[i] = &QuadraticProbingHashTableStore[T]{key: EMPTY, deleted: NOT_DELETED}
+		buckets[i] = &DoubleHashTableStore[T]{key: EMPTY, deleted: NOT_DELETED}
 	}
-	return &QuadraticProbingHashTable[T]{capacity, buckets}
+	return &DoubleHashTable[T]{capacity, buckets}
 }
 
-func (qpht *QuadraticProbingHashTable[T]) Capacity() int {
+func (qpht *DoubleHashTable[T]) Capacity() int {
 	return qpht.capacity
 }
 
 // Set adds a key-value pair to the hash table.
-func (qpht *QuadraticProbingHashTable[T]) Set(key string, value T) {
+func (qpht *DoubleHashTable[T]) Set(key string, value T) {
 	index, _ := qpht.findSlot(key)
 
 	if index == NONE {
@@ -45,7 +45,7 @@ func (qpht *QuadraticProbingHashTable[T]) Set(key string, value T) {
 }
 
 // Get retrieves a value from the hash table.
-func (qpht *QuadraticProbingHashTable[T]) Get(key string) T {
+func (qpht *DoubleHashTable[T]) Get(key string) T {
 	var value T
 
 	index, _ := qpht.findSlot(key)
@@ -58,7 +58,7 @@ func (qpht *QuadraticProbingHashTable[T]) Get(key string) T {
 }
 
 // Delete deletes a key-value pair from the hash table.
-func (qpht *QuadraticProbingHashTable[T]) Delete(key string) bool {
+func (qpht *DoubleHashTable[T]) Delete(key string) bool {
 	var emptyValue T
 
 	index, _ := qpht.findSlot(key)
@@ -75,7 +75,7 @@ func (qpht *QuadraticProbingHashTable[T]) Delete(key string) bool {
 }
 
 // Contains checks if a key exists in the hash table.
-func (qpht *QuadraticProbingHashTable[T]) Contains(key string) bool {
+func (qpht *DoubleHashTable[T]) Contains(key string) bool {
 	index, _ := qpht.findSlot(key)
 
 	if index != NONE && qpht.buckets[index].key == key {
@@ -86,7 +86,7 @@ func (qpht *QuadraticProbingHashTable[T]) Contains(key string) bool {
 }
 
 // Find returns the index of the bucket and the index of the key-value pair in the bucket.
-func (qpht *QuadraticProbingHashTable[T]) Find(key string) (int, int) {
+func (qpht *DoubleHashTable[T]) Find(key string) (int, int) {
 	index, probeLength := qpht.findSlot(key)
 
 	if index != NONE && qpht.buckets[index].key != key {
@@ -97,7 +97,7 @@ func (qpht *QuadraticProbingHashTable[T]) Find(key string) (int, int) {
 }
 
 // Clear removes all key-value pairs from the hash table.
-func (qpht *QuadraticProbingHashTable[T]) Clear() {
+func (qpht *DoubleHashTable[T]) Clear() {
 	var value T
 
 	for _, bucket := range qpht.buckets {
@@ -108,21 +108,24 @@ func (qpht *QuadraticProbingHashTable[T]) Clear() {
 }
 
 // Dump prints the contents of the hash table.
-func (qpht *QuadraticProbingHashTable[T]) Dump() {
+func (qpht *DoubleHashTable[T]) Dump() {
 	for index, bucket := range qpht.buckets {
 		fmt.Printf("Bucket %d: %v\n", index, bucket)
 	}
 }
 
-func (qpht *QuadraticProbingHashTable[T]) findSlot(key string) (slot int, probeLength int) {
+func (qpht *DoubleHashTable[T]) findSlot(key string) (slot int, probeLength int) {
 	slot = NONE
 	probeLength = 0
 	guard := false
 
 	//case not empty
 	for i := 0; ; i++ {
-		//quadradic probing
-		index := (Hash_djb2(key) + i*i) % qpht.capacity
+		//double hashing
+		hash1 := Hash_djb2(key) % qpht.capacity
+		hash2 := Hash_jenkins(key) % qpht.capacity
+		front := (hash1 + i*hash2)
+		index := front % qpht.capacity
 
 		// case we have reached the end of the table
 		// wrap around once
@@ -151,7 +154,7 @@ func (qpht *QuadraticProbingHashTable[T]) findSlot(key string) (slot int, probeL
 }
 
 // Make a display showing whether each array entry is nil.
-func (qpht *QuadraticProbingHashTable[T]) DumpConcise() {
+func (qpht *DoubleHashTable[T]) DumpConcise() {
 	// Loop through the array.
 	for i, bucket := range qpht.buckets {
 		if bucket.deleted {
@@ -171,7 +174,7 @@ func (qpht *QuadraticProbingHashTable[T]) DumpConcise() {
 }
 
 // Return the average probe sequence length for the items in the table.
-func (qpht *QuadraticProbingHashTable[T]) AveProbeSequenceLength() float32 {
+func (qpht *DoubleHashTable[T]) AveProbeSequenceLength() float32 {
 	totalLength := 0
 	numValues := 0
 	for _, bucket := range qpht.buckets {
@@ -184,17 +187,20 @@ func (qpht *QuadraticProbingHashTable[T]) AveProbeSequenceLength() float32 {
 	return float32(totalLength) / float32(numValues)
 }
 
-func (qpht *QuadraticProbingHashTable[T]) Probe(key string) int {
+func (qpht *DoubleHashTable[T]) Probe(key string) int {
 	// Hash the key.
-	hash := Hash_djb2(key) % qpht.capacity
-	fmt.Printf("Probing %s (%d)\n", key, hash)
+	//double hashing
+	hash1 := Hash_djb2(key) % qpht.capacity
+	hash2 := Hash_jenkins(key) % qpht.capacity
+
+	fmt.Printf("Probing %s (%d)-(%d)\n", key, hash1, hash2)
 
 	// Keep track of a deleted spot if we find one.
 	deletedIndex := -1
 
 	// Probe up to qpht.capacity times.
 	for i := 0; i < qpht.capacity; i++ {
-		index := (hash + i) % qpht.capacity
+		index := (hash1 + i*hash2) % qpht.capacity
 
 		fmt.Printf("    %d: ", index)
 		if qpht.buckets[index] == nil {
