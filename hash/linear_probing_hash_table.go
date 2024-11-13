@@ -4,7 +4,6 @@ import (
 	"fmt"
 )
 
-const EMPTY = ""
 const NONE = -1
 
 const SLOT_USED = true

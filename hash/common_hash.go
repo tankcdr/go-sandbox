@@ -1,5 +1,11 @@
 package hash
 
+const EMPTY = ""
+
+const DELETED = true
+const NOT_DELETED = !DELETED
+const USED = NOT_DELETED
+
 // *db2 hash function. See http://www.cse.yorku.ca/~oz/hash.html.
 func Hash_djb2(value string) int {
 	hash := 5381
