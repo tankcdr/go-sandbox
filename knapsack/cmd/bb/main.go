@@ -5,7 +5,7 @@ import (
 	"knapsack"
 )
 
-const numItems = 32 // A reasonable value for exhaustive search.
+const numItems = 32
 
 const minValue = 1
 const maxValue = 10
@@ -28,10 +28,10 @@ func main() {
 	fmt.Println()
 
 	// Exhaustive search
-	if numItems > 65 { // Only run exhaustive search if numItems <= 23.
+	if numItems > 65 {
 		fmt.Println("Too many items for exhaustive search")
 	} else {
-		fmt.Println("*** Exhaustive Search ***")
-		knapsack.RunAlgorithm(knapsack.ExhaustiveSearch, items, allowedWeight)
+		fmt.Println("*** Branch and Bound Search ***")
+		knapsack.RunAlgorithm(knapsack.BranchAndBoundSearch, items, allowedWeight)
 	}
 }
