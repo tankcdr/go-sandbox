@@ -77,52 +77,49 @@ func RodsTechniqueSortedSearch(items []Item, allowedWeight int) ([]Item, int, in
 func doRodsTechniqueSearch(items []BlockableItem, allowedWeight, nextIndex, bestValue, currentValue, currentWeight, remainingValue int) ([]BlockableItem, int, int) {
 
 	if nextIndex >= len(items) {
-		return copyItems(items), solutionValue(items, allowedWeight), 1
+		return copyItems(items), currentValue, 1
 	}
 
 	// Pruning condition
 	if currentValue+remainingValue <= bestValue {
-		return nil, 0, 1
+		return nil, currentValue, 1
 	}
 
-	var bestSolution []BlockableItem
-	var totalCalls int
+	// Try adding the next item.
+	var test1Solution []BlockableItem
+	test1Solution = nil
+	test1Value := 0
+	test1Calls := 1
 
 	// Branch where the current item is selected
 	if currentWeight+items[nextIndex].Weight <= allowedWeight && items[nextIndex].BlockedBy == -1 {
-		itemsCopy := copyItems(items)
-		itemsCopy[nextIndex].IsSelected = true
+		items[nextIndex].IsSelected = true
 
-		test1Solution, test1Value, test1Calls := doRodsTechniqueSearch(
-			itemsCopy, allowedWeight, nextIndex+1, bestValue,
+		test1Solution, test1Value, test1Calls = doRodsTechniqueSearch(
+			items, allowedWeight, nextIndex+1, bestValue,
 			currentValue+items[nextIndex].Value,
 			currentWeight+items[nextIndex].Weight,
 			remainingValue-items[nextIndex].Value)
 
 		if test1Value > bestValue {
-			bestSolution = test1Solution
 			bestValue = test1Value
 		}
-		totalCalls += test1Calls
 	}
 
 	// Branch where the current item is not selected
-	if currentValue+remainingValue-items[nextIndex].Value > bestValue {
-		itemsCopy := copyItems(items)
-		blockItems(itemsCopy[nextIndex], itemsCopy)
-		itemsCopy[nextIndex].IsSelected = false
-		test2Solution, test2Value, test2Calls := doRodsTechniqueSearch(
-			itemsCopy, allowedWeight, nextIndex+1, bestValue, currentValue,
-			currentWeight, remainingValue-items[nextIndex].Value)
+	blockItems(items[nextIndex], items)
+	items[nextIndex].IsSelected = false
+	test2Solution, test2Value, test2Calls := doRodsTechniqueSearch(
+		items, allowedWeight, nextIndex+1, bestValue, currentValue,
+		currentWeight, remainingValue-items[nextIndex].Value)
+	unblockItems(items[nextIndex], items)
 
-		if test2Value > bestValue {
-			bestSolution = test2Solution
-			bestValue = test2Value
-		}
-		totalCalls += test2Calls
+	// Return the solution that is better.
+	if test1Value >= test2Value {
+		return test1Solution, test1Value, test1Calls + test2Calls + 1
+	} else {
+		return test2Solution, test2Value, test1Calls + test2Calls + 1
 	}
-
-	return bestSolution, bestValue, totalCalls
 }
 
 func copyItems(items []BlockableItem) []BlockableItem {
