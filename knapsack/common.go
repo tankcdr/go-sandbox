@@ -7,14 +7,15 @@ import (
 )
 
 type Item struct {
-	Value, Weight int
-	IsSelected    bool
+	Id, Value, Weight int
+	IsSelected        bool
 }
 
 func MakeItems(numItems, minValue, maxValue, minWeight, maxWeight int) []Item {
 	items := make([]Item, numItems)
 	for i := range items {
 		items[i] = Item{
+			Id:         i,
 			Value:      minValue + rand.Intn(maxValue-minValue+1),
 			Weight:     minWeight + rand.Intn(maxWeight-minWeight+1),
 			IsSelected: false,
