@@ -38,6 +38,7 @@ func DynamicSearch(items []Item, allowedWeight int) ([]Item, int, int) {
 	w := allowedWeight
 	for i > 0 && w > 0 {
 		if results[i][w] != results[i-1][w] {
+			items[i-1].IsSelected = true
 			selectedItems = append(selectedItems, items[i-1])
 			w -= items[i-1].Weight
 		}

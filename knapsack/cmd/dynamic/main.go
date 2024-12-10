@@ -5,7 +5,7 @@ import (
 	"knapsack"
 )
 
-const numItems = 2000
+const numItems = 20000
 
 const minValue = 1
 const maxValue = 10
